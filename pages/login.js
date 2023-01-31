@@ -7,13 +7,16 @@ import { AuthErrorCodes } from "firebase/auth";
 import Link from 'next/link';
 
 const errorCodeToMessage = (code) => {
+  console.log("CODE: ", code);
   switch (code) {
     case AuthErrorCodes.CREDENTIAL_MISMATCH:
     case AuthErrorCodes.USER_DELETED:
-      return 'La constraseña o el correo no son válidos.';
-    default: return 'Hubo un error vuelva a intentar más tarde.'
+    case AuthErrorCodes.INVALID_EMAIL:
+      return "La constraseña o el correo no son válidos.";
+    default:
+      return "Hubo un error vuelva a intentar más tarde.";
   }
-}
+};
 
 const LoginWrapper = styled.div`
   height: 100vh;
@@ -24,7 +27,7 @@ const LoginWrapper = styled.div`
 `;
 
 const LoginContainer = styled.div`
-  border: 1px solid #DADDDB;
+  border: 1px solid #dadddb;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -117,7 +120,6 @@ function Login() {
   const onSubmit = () => {
     setError(undefined);
     logIn(email, password).catch((error) => {
-      console.log("There was an error: ", errorCodeToMessage(error.code));
       setError(errorCodeToMessage(error.code));
     });
   };
@@ -148,8 +150,8 @@ function Login() {
               />
             </FormGroup>
             {error ? <ErrorMessage>{error}</ErrorMessage> : undefined}
+            <LoginButton onClick={onSubmit}>Iniciar Sesión</LoginButton>
           </FormContainer>
-          <LoginButton onClick={onSubmit}>Iniciar Sesión</LoginButton>
           <div>
             Aún no tienes cuenta? <Link href="/signup">Regístrate aquí</Link>
           </div>
