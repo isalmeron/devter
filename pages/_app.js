@@ -1,7 +1,7 @@
 import Layout from 'components/Layout/Layout';
 import GlobalStyles from '../styles/global';
 import UserProvider from '../context/user';
-import WithAuth from 'hooks/WithAuth';
+import WithAuth from "auth/WithAuth";
 
 function MyApp({ Component, pageProps }) {
   // Use the layout defined at the page level, if available
