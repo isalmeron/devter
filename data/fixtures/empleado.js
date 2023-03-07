@@ -1,7 +1,8 @@
 export const EMPLEADO = {
   id: "EMPLEADO-1",
-  nombre: "Irving Salmeron",
-  rfc: "SAPI901210DA8",
+  activo: true,
+  nombre: "Juan Perez",
+  rfc: "RAFHD901210DA8",
   razonSocial: "Irving Salmeron",
   regimen: "Asalariado",
   numeroSeguroSocial: "14253671523",
@@ -14,7 +15,14 @@ export const EMPLEADO = {
     municipio: "Cuahutemoc",
   },
   percepciones: {
-    salario: 1000,
+    salarioDiario: 1500,
     conceptos: [],
   },
+  fechaIngreso: 1514764800000, //01-01-2018 timestamp
+  fechaIngresoNomina: 1514764900000,
+  fechaBaja: null, // null sigue activo
+  tipoEmpleado: "?",
+  puesto: "?",
+  centroCosto: "?",
+  jefeInmediato: "?",
 };

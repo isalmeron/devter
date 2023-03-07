@@ -5,13 +5,16 @@ import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
 import { AuthErrorCodes } from "firebase/auth";
 import Link from 'next/link';
+import Button from "components/Button/Button";
 
 const errorCodeToMessage = (code) => {
-  console.log("CODE: ", code);
   switch (code) {
     case AuthErrorCodes.CREDENTIAL_MISMATCH:
     case AuthErrorCodes.USER_DELETED:
     case AuthErrorCodes.INVALID_EMAIL:
+    case AuthErrorCodes.INTERNAL_ERROR:
+    case AuthErrorCodes.INVALID_PASSWORD:
+    case AuthErrorCodes.USER_DELETED:
       return "La constraseña o el correo no son válidos.";
     default:
       return "Hubo un error vuelva a intentar más tarde.";
@@ -35,33 +38,39 @@ const LoginContainer = styled.div`
   width: 60%;
   height: 70%;
   border-radius: 24px;
-  padding: 10em;
+  padding: 1.5rem;
+  gap: 3rem;
 `;
 
 const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 3rem;
 `;
 
 const FormGroup = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: 6rem 1fr;
   align-items: center;
-  justify-content: space-between;
+  gap: 1rem;
 `;
 
 const LoginEmail = styled.input.attrs(() => ({
   type: "text",
   name: "email",
 }))`
-  min-width: 20em;
-  margin: 2em;
-  padding: 1em;
-  border-radius: 16px;
+  min-width: 20rem;
+  padding: 0.8rem;
+  border-radius: 8px;
   border: 1px solid #0000003b;
   outline: none;
   transition: all ease 0.2s;
+  grid-column: 2;
+  transition: box-shadow ease-in-out 300ms;
 
-  &:hover {
+  &:hover,
+  &:focus {
     box-shadow: 0 10px 10px 1px rgba(0, 0, 0, 0.2);
   }
 `;
@@ -70,40 +79,30 @@ const LoginPassword = styled.input.attrs(() => ({
   type: "password",
   name: "password",
 }))`
-  min-width: 20em;
-  margin: 2em;
-  padding: 1em;
-  border-radius: 16px;
+  min-width: 20rem;
+  padding: 0.8rem;
+  border-radius: 8px;
   border: 1px solid #0000003b;
   outline: none;
   transition: all ease 0.2s;
+  grid-column: 2;
+  transition: box-shadow ease-in-out 300ms;
 
-  &:hover {
+  &:hover,
+  &:focus {
     box-shadow: 0 10px 10px 1px rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const LoginButton = styled.button`
-  background-color: #1993ff;
-  color: #ffffff;
-  border-radius: 16px;
-  padding: 1em;
-  margin: 5em;
-  border: none;
-  cursor: pointer;
-  width: 250px;
-  transition: all ease 0.2s;
-
-  &:hover {
-    background-color: #1166b2;
   }
 `;
 
 const ErrorMessage = styled.div`
   color: #cc0000;
-  font-size: 0.85rem;
+  font-size: 1rem;
   text-align: center;
   font-weight: 500;
+`;
+
+const SignupContainer = styled.span`
+  margin: 2rem 0;
 `;
 
 function Login() {
@@ -134,27 +133,31 @@ function Login() {
           <h1>Iniciar sesión</h1>
           <FormContainer>
             <FormGroup>
-              <div>Correo: </div>
-              <div>
-                <LoginEmail
-                  onChange={(event) => setEmail(event.target.value)}
-                  value={email}
-                />
-              </div>
+              <label htmlFor="email">Correo: </label>
+              <LoginEmail
+                onChange={(event) => setEmail(event.target.value)}
+                value={email}
+              />
             </FormGroup>
             <FormGroup>
-              <div>Contraseña: </div>
+              <label>Contraseña: </label>
               <LoginPassword
                 onChange={(event) => setPassword(event.target.value)}
                 value={password}
               />
             </FormGroup>
             {error ? <ErrorMessage>{error}</ErrorMessage> : undefined}
-            <LoginButton onClick={onSubmit}>Iniciar Sesión</LoginButton>
+
+            <Button color="primary" onClick={onSubmit}>
+              Iniciar Sesión
+            </Button>
           </FormContainer>
-          <div>
-            Aún no tienes cuenta? <Link href="/signup">Regístrate aquí</Link>
-          </div>
+          <SignupContainer>
+            Aún no tienes cuenta?{" "}
+            <Link href="/signup">
+              <Button variant="text">Regístrate aquí</Button>
+            </Link>
+          </SignupContainer>
         </LoginContainer>
       </LoginWrapper>
     </>
