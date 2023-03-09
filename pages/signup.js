@@ -8,7 +8,7 @@ import Button from "components/Button/Button";
 
 const validateCredentials = (email, password) => {
   const emailRegex = /^\S+@\S+(\.\S+)+$/;
-  const passwordRegex = /^[A-Za-z0-9#$%&]{8,15}$/;
+  const passwordRegex = /^[A-Za-z0-9!#$%&]{8,15}$/;
 
   const isValidEmail = emailRegex.test(email);
   const isValidPassword = passwordRegex.test(password);
@@ -98,12 +98,12 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState();
-  const { user, registerUser } = useContext(userContext);
   const router = useRouter();
+  const { registerUser } = useContext(userContext);
 
-  useEffect(() => {
-    if (user?.isAuthenticated) router.replace("/");
-  }, [user]);
+  // useEffect(() => {
+  //   if (user?.isAuthenticated) router.replace("/");
+  // }, [user]);
 
   const onSubmit = () => {
     setError(undefined);
@@ -114,12 +114,7 @@ function SignUp() {
       return;
     }
 
-    registerUser(email, password).catch((error) => {
-      console.log("There was an error: ", error.code);
-      setError("Hubo un error al crear tu cuenta, contacta al administrador.");
-      setEmail("");
-      setPassword("");
-    });
+    registerUser(email, password);
   };
 
   return (

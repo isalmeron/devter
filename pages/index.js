@@ -1,9 +1,9 @@
 import Head from 'next/head'
-import { userContext } from '../context/user';
-import { useContext } from 'react';
+import { useSession } from "next-auth/react";
 
 function Home() {
-  const { user } = useContext(userContext);
+  const { data, status } = useSession();
+  console.log("index", data, status);
 
   return (
     <>
@@ -15,7 +15,7 @@ function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h1>{user ? user.email : "Not Logged In"}</h1>
+      <div>INDEX</div>
     </>
   );
 }

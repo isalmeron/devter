@@ -1,33 +1,21 @@
 import Layout from 'components/Layout/Layout';
 import GlobalStyles from "styles/global";
 import UserProvider from "context/user";
-import WithAuth from "auth/WithAuth";
 import { ThemeProvider } from "styled-components";
 import theme from "styles/theme";
+import { SessionProvider } from "next-auth/react";
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   // Use the layout defined at the page level, if available
-  const getLayout =
-    Component.getLayout ||
-    (() => (
-      <ThemeProvider theme={theme}>
-        <UserProvider>
-          <WithAuth>
-            <GlobalStyles />
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </WithAuth>
-        </UserProvider>
-      </ThemeProvider>
-    ));
-
-  // Enables some pages like the login to use their custom layout without sidebar
-  return getLayout(
+  return (
     <ThemeProvider theme={theme}>
       <UserProvider>
-        <GlobalStyles />
-        <Component {...pageProps} />
+        <SessionProvider session={session}>
+          <GlobalStyles />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </SessionProvider>
       </UserProvider>
     </ThemeProvider>
   );

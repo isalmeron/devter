@@ -63,11 +63,6 @@ const LogoutButton = styled.button`
 export default function Sidebar() {
   const router = useRouter();
   const { logOut } = useContext(userContext);
-  const signOut = () => {
-    logOut().then(() => {
-      router.replace("login");
-    });
-  };
 
   return (
     <Aside>
@@ -86,7 +81,7 @@ export default function Sidebar() {
         </li>
       </Menu>
       <LogoutContainer>
-        <LogoutButton onClick={signOut}>Cerrar Sesión</LogoutButton>
+        <LogoutButton onClick={logOut}>Cerrar Sesión</LogoutButton>
       </LogoutContainer>
     </Aside>
   );

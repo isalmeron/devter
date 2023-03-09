@@ -1,7 +1,7 @@
-import { onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
-import { useState, createContext, useEffect } from "react"
+import { useState, createContext } from "react";
 import { USER_STATUS } from "util/constants";
-import { auth } from "@/firebase/app";
+import { signIn, signOut } from "next-auth/react";
+import prisma from "@/prisma/client";
 
 export const userContext = createContext();
 
@@ -15,34 +15,32 @@ const UserProvider = ({ children }) => {
   */
   const [user, setUser] = useState(USER_STATUS.NOT_KNOWN);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        setUser({
-          isAuthenticated: false,
-        });
-      } else {
-        setUser({
-          ...user,
-          isAuthenticated: true,
-        });
-      }
+  const registerUser = async (email, password) => {
+    const newUser = prisma.user.create({
+      data: {
+        email,
+        password,
+      },
     });
-
-    return () => unsubscribe();
-  }, []);
-
-  const registerUser = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+    console.log("signed up: ", newUser);
+    const signedIn = await signIn("credentials", {
+      email,
+      password,
+    });
+    console.log("signed up in: ", signedIn);
+    setUser(signedIn);
   };
 
-  const logIn = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
+  const logIn = async (email, password) => {
+    const loggedUser = await signIn("credentials", { email, password });
+    console.log("signed in: ", loggedUser);
+    setUser(loggedUser);
   };
 
   const logOut = () => {
     setUser(USER_STATUS.NOT_LOGGED);
-    return signOut(auth);
+
+    return signOut({ callbackUrl: "http://localhost:3000/login" });
   };
 
   return (
@@ -52,4 +50,4 @@ const UserProvider = ({ children }) => {
   );
 };
 
-export default UserProvider
+export default UserProvider;

@@ -118,9 +118,7 @@ function Login() {
 
   const onSubmit = () => {
     setError(undefined);
-    logIn(email, password).catch((error) => {
-      setError(errorCodeToMessage(error.code));
-    });
+    logIn(email, password);
   };
 
   return (
@@ -164,8 +162,6 @@ function Login() {
   );
 }
 
-Login.getLayout = function getLayout(page) {
-  return page;
-}
+Login.auth = false;
 
 export default Login;
