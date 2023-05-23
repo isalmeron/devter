@@ -3,9 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/prisma/client";
 
-// For more information on each option (and a full list of options) go to
-// https://next-auth.js.org/configuration/options
-export default NextAuth({
+export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     // Choose how you want to save the user session.
@@ -22,13 +20,13 @@ export default NextAuth({
     // Seconds - Throttle how frequently to write to database to extend a session.
     // Use it to limit write operations. Set to 0 to always update the database.
     // Note: This option is ignored if using JSON Web Tokens
-    updateAge: 24 * 60 * 60, // 24 hours
+    // updateAge: 24 * 60 * 60, // 24 hours
 
     // The session token is usually either a random UUID or string, however if you
     // need a more customized session token string, you can define your own generate function.
-    generateSessionToken: () => {
-      return randomUUID?.() ?? randomBytes(32).toString("hex");
-    },
+    // generateSessionToken: () => {
+    //   return randomUUID?.() ?? randomBytes(32).toString("hex");
+    // },
   },
   debug: true,
   providers: [
@@ -40,21 +38,28 @@ export default NextAuth({
       // e.g. domain, username, password, 2FA token, etc.
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        email: { label: "Username", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        console.log("authorize: ", credentials);
         // Add logic here to look up the user from the credentials supplied
-        const user = await prisma.user.findUnique({
-          where: { email: req.body.username, password: req.body.password },
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-          },
-        });
+        const user = await fetch(
+          `${process.env.NEXTAUTH_URL}/api/user/signin`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          }
+        )
+          .then((data) => data.json())
+          .catch((e) => {
+            console.log("Error authorizing: ", e);
+          });
 
         if (user) {
           // Any object returned will be saved in `user` property of the JWT
@@ -72,4 +77,8 @@ export default NextAuth({
   pages: {
     signIn: "/login",
   },
-});
+};
+
+// For more information on each option (and a full list of options) go to
+// https://next-auth.js.org/configuration/options
+export default NextAuth(authOptions);

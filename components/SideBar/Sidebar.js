@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 import Link from 'next/link'
 import { useRouter } from 'next/router';
-import { useContext } from 'react';
-import { userContext } from '../../context/user';
+import { signOut } from "next-auth/react";
 
 const Aside = styled.aside`
   grid-area: sidebar;
@@ -62,7 +61,6 @@ const LogoutButton = styled.button`
 
 export default function Sidebar() {
   const router = useRouter();
-  const { logOut } = useContext(userContext);
 
   return (
     <Aside>
@@ -81,7 +79,7 @@ export default function Sidebar() {
         </li>
       </Menu>
       <LogoutContainer>
-        <LogoutButton onClick={logOut}>Cerrar Sesión</LogoutButton>
+        <LogoutButton onClick={signOut}>Cerrar Sesión</LogoutButton>
       </LogoutContainer>
     </Aside>
   );

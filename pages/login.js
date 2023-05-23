@@ -1,25 +1,9 @@
 import Head from 'next/head'
 import styled from 'styled-components'
-import { userContext } from '../context/user';
-import { useContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/router'
-import { AuthErrorCodes } from "firebase/auth";
-import Link from 'next/link';
+import { useState } from "react";
+import Link from "next/link";
 import Button from "components/Button/Button";
-
-const errorCodeToMessage = (code) => {
-  switch (code) {
-    case AuthErrorCodes.CREDENTIAL_MISMATCH:
-    case AuthErrorCodes.USER_DELETED:
-    case AuthErrorCodes.INVALID_EMAIL:
-    case AuthErrorCodes.INTERNAL_ERROR:
-    case AuthErrorCodes.INVALID_PASSWORD:
-    case AuthErrorCodes.USER_DELETED:
-      return "La constraseña o el correo no son válidos.";
-    default:
-      return "Hubo un error vuelva a intentar más tarde.";
-  }
-};
+import { signIn } from "next-auth/react";
 
 const LoginWrapper = styled.div`
   height: 100vh;
@@ -109,16 +93,11 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState();
-  const { user, logIn } = useContext(userContext);
-  const router = useRouter();
 
-  useEffect(() => {
-    if (user?.isAuthenticated) router.replace("/");
-  }, [user]);
-
-  const onSubmit = () => {
+  const onSubmit = async () => {
     setError(undefined);
-    logIn(email, password);
+
+    await signIn("credentials", { email, password, callbackUrl: "/" });
   };
 
   return (

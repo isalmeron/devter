@@ -1,7 +1,6 @@
 import { useState, createContext } from "react";
 import { USER_STATUS } from "util/constants";
 import { signIn, signOut } from "next-auth/react";
-import prisma from "@/prisma/client";
 
 export const userContext = createContext();
 
@@ -15,21 +14,7 @@ const UserProvider = ({ children }) => {
   */
   const [user, setUser] = useState(USER_STATUS.NOT_KNOWN);
 
-  const registerUser = async (email, password) => {
-    const newUser = prisma.user.create({
-      data: {
-        email,
-        password,
-      },
-    });
-    console.log("signed up: ", newUser);
-    const signedIn = await signIn("credentials", {
-      email,
-      password,
-    });
-    console.log("signed up in: ", signedIn);
-    setUser(signedIn);
-  };
+  const registerUser = async (email, password) => {};
 
   const logIn = async (email, password) => {
     const loggedUser = await signIn("credentials", { email, password });

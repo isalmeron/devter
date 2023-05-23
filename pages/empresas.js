@@ -2,11 +2,12 @@ import Head from "next/head";
 import styled from "styled-components";
 import { DataGrid } from "@mui/x-data-grid";
 import Link from "next/link";
-import { EMPRESAS } from "data/fixtures/empresa";
 import Nav from "components/Nav/Nav";
 import Button from "components/Button/Button";
 import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "@/firebase/app";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]";
 
 const columnasEmpresa = [
   { field: "id", headerName: "ID", width: 150 },
@@ -92,6 +93,17 @@ function Empresas({ empresas }) {
 }
 
 export const getServerSideProps = async (ctx) => {
+  const session = await getServerSession(ctx.req, ctx.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
   const empresasSnapShot = await getDocs(collection(firestore, "empresas"));
   const rows = [];
   empresasSnapShot.forEach((doc) => {

@@ -1,10 +1,9 @@
 import Head from 'next/head'
 import styled from 'styled-components'
-import { userContext } from '../context/user';
-import { useContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/router'
-import Link from 'next/link';
+import { useState } from "react";
+import Link from "next/link";
 import Button from "components/Button/Button";
+import { signIn } from "next-auth/react";
 
 const validateCredentials = (email, password) => {
   const emailRegex = /^\S+@\S+(\.\S+)+$/;
@@ -98,14 +97,8 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState();
-  const router = useRouter();
-  const { registerUser } = useContext(userContext);
 
-  // useEffect(() => {
-  //   if (user?.isAuthenticated) router.replace("/");
-  // }, [user]);
-
-  const onSubmit = () => {
+  const onSubmit = async () => {
     setError(undefined);
     const validCredentials = validateCredentials(email, password);
 
@@ -114,7 +107,26 @@ function SignUp() {
       return;
     }
 
-    registerUser(email, password);
+    const user = await fetch("/api/user/signup", {
+      method: "POST",
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((data) => data.json())
+      .catch((e) => {
+        console.log("There was an error fetching SIGNUP: ", e);
+      });
+
+    if (user) {
+      signIn("credentials", { email, password, callbackUrl: "/" });
+    } else {
+      setError("Error al registrarse");
+    }
   };
 
   return (
@@ -160,8 +172,6 @@ function SignUp() {
   );
 }
 
-SignUp.getLayout = function getLayout(page) {
-  return page;
-};
+SignUp.auth = false;
 
 export default SignUp;
